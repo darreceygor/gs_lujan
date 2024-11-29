@@ -214,4 +214,33 @@ header {
 
 
 
+/*  HISTORY SECTION  */
+/********************/
+
+footer {
+  z-index: 10; /* Ajustado a un valor razonable */
+  background-color: var(--white);
+  width: 100%;
+  height: auto;
+  padding: 0.5rem ;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 5rem; /* Espaciado entre elementos */
+  position: fixed;
+  bottom: 0; /* Asegura que esté pegado al borde inferior */
+}
+
+footer img {
+  width: 50px;
+  height: auto; /* Mantiene proporciones */
+}
+
+footer span {
+  font-weight: bold;
+  font-style: italic;
+}
+
+
 
