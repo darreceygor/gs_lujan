@@ -42,7 +42,7 @@ body {
 /********************/
 
 header {
-  z-index: 99999;
+  z-index: 999;
   background-color: var(--verde_fondo);
   margin: 0 0 0 -4rem;
   padding: 6rem 0 8rem 0;
@@ -63,11 +63,28 @@ header {
   height: 100px;
 }
 
-@media (max-width: 768px) {
-  .header {
-    margin:0;
-    padding: 0;
-    font-size: 0.9em;
+/* Estilos responsive para pantallas pequeñas */
+@media screen and (max-width: 768px) {
+
+  .container {
+    margin: 16rem 5rem 0 6rem;
+    width: 100%;
+  }
+  
+  header {
+    margin: 0;
+    padding: 4rem 1rem;
+    width: 100%; /* Ajusta el ancho al 100% del viewport */
+    min-width: unset; /* Elimina el valor mínimo de ancho */
+    height: auto; /* Permite que la altura se ajuste automáticamente */
+    min-height: unset; /* Elimina la altura mínima */
+    border-radius: 0; /* Opcional: elimina el redondeo si no es necesario */
+    text-align: center;
+  }
+
+  .logo {
+    width: 80px; /* Ajusta el tamaño de la imagen para móviles */
+    height: 80px;
   }
 }
 
@@ -75,7 +92,6 @@ header {
 /********************/
 
 .navbar {
-  /*background-color: var(--azul_barra);*/
   width: 100%;
   z-index: 9999;
   position: fixed;
@@ -110,6 +126,31 @@ header {
   height: 25px;
   color: var(--white);
 }
+
+@media screen and (max-width: 768px) {
+  .navbar {
+    justify-content: right; /* Centra los elementos verticalmente */
+    align-items: center; /* Centra los elementos horizontalmente */
+    padding: 0.5rem 0;
+  }
+
+  .navbar ul {
+    flex-direction: row; /* Cambia los enlaces a disposición vertical */
+    align-items: center; /* Centra los elementos dentro del contenedor */
+  }
+
+  .navbar a {
+    font-size: 14px; /* Reduce ligeramente el tamaño del texto */
+    padding: 10px 15px; /* Ajusta el espacio para pantallas pequeñas */
+  }
+
+  .ico_rrss {
+    margin: 10px 0; /* Añade margen entre los iconos */
+    width: 30px; /* Ajusta el tamaño del icono */
+    height: 30px;
+  }
+}
+
 
 /*  HISTORY SECTION  */
 /********************/
@@ -165,12 +206,6 @@ header {
   transition: opacity 0.3s, transform 0.3s;
   
 }
-
-/* .details::before {
-  background-color: var(--details-bg);
-  opacity: 0.8;  Controla la opacidad 
-  z-index: -1;  Asegura que quede detrás del contenido 
-} */
 
 .details:not(.hidden) {
   display: block;
@@ -250,5 +285,9 @@ footer span {
   font-style: italic;
 }
 
-
+@media (max-width: 768px) {
+  footer {
+    gap:2rem
+  }
+}
 
