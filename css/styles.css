@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+:root {
+  --principal-bg: #f4f4f4;
+  --button-bg: #0252aa;
+  --timeline-bg:#e9ecef;
+  --details-bg:#e9ecef;
+  --white: #fff;
+  --black:#000;
+  --red:#db1119;
+  --verde_fondo: #60b134;
+  --azul_barra: #00aaf2;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Ubuntu", sans-serif;
+  background-image: url("../img/fondo.jpg"); 
+  /* background-color: var(--principal-bg); */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* body::before{
+  opacity: 0.1;
+} */
+
+.container {
+  margin: 15rem 5rem 0 10rem;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/*  HEADER SECTION  */
+/********************/
+
+header {
+  z-index: 99999;
+  background-color: var(--verde_fondo);
+  margin: 0 0 0 -4rem;
+  padding: 6rem 0 8rem 0;
+  width: 85rem;
+  min-width: 25rem;
+  height: 2rem;
+  min-height: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  position: fixed;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+}
+
+/*  NAV BAR SECTION  */
+/********************/
+
+.navbar {
+  /*background-color: var(--azul_barra);*/
+  width: 100%;
+  z-index: 9999;
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+
+}
+
+.navbar ul {
+  display: flex;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar li {
+  list-style: none;
+}
+
+.navbar a {
+  display: block;
+  padding: 15px 20px;
+  color: var(--black);
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background 0.3s;
+}
+
+.ico_rrss {
+  width: 25px;
+  height: 25px;
+  color: var(--white);
+}
+
+/*  HISTORY SECTION  */
+/********************/
+
+.timeline-container {
+  width: 90%;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin: 1rem 0 0 0;
+  background-color: var(--timeline-bg);
+  border-radius: 8px;
+  padding: 10px 0;
+}
+
+.timeline {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.timeline button {
+  background-color: var(--button-bg);
+  color: var(--white);
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.timeline button:hover {
+  background-color: var(--button-bg);
+}
+
+.timeline button:focus {
+  outline: 3px solid #ffcc00;
+}
+
+/*  MODAL HISTORY   */
+/********************/
+
+.details {
+  background-color: var(--details-bg);
+  border: 1px solid var(--white);
+  border-radius: 8px;
+  margin: 1rem 0;
+  padding: 20px;
+  max-width: 90%;
+  width: 100%;
+  display: none;
+  opacity: 0.3;
+  transform: scale(0.95);
+  transition: opacity 0.3s, transform 0.3s;
+  
+}
+
+/* .details::before {
+  background-color: var(--details-bg);
+  opacity: 0.8;  Controla la opacidad 
+  z-index: -1;  Asegura que quede detrás del contenido 
+} */
+
+.details:not(.hidden) {
+  display: block;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.details img {
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+.details button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+
+@media (max-width: 768px) {
+  .timeline button {
+    font-size: 0.9em;
+  }
+
+  .details {
+    padding: 15px;
+  }
+}
+
+.intro-content {
+  width: 90%;
+  padding: 2rem;
+  height: auto;
+  white-space: wrap;
+  margin: 1rem 0 0 0;
+  background-color: var(--timeline-bg);
+  border-radius: 8px;
+}
+
+
+.hidden {
+  display: none;
+}
+
+
+
+
