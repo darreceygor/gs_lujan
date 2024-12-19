@@ -31,9 +31,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showDetails(event) {
+  //year
     detailYear.textContent = event.year || "Año desconocido";
-    detailTitle.textContent = event.title || "Sin título";
-    detailEvent.textContent = event.event || "Sin evento específico";
+
+  //title
+    if (event.title) {
+          detailTitle.textContent = event.title;
+          detailTitle.classList.remove('hidden'); // Asegúrate de que no esté oculto
+      } else {
+          detailTitle.textContent = ""; // Opcional, para limpiar el texto
+          detailTitle.classList.add('hidden'); // Añade la clase para ocultar
+      }
+      
+  //event
+    if (event.event) {
+        detailEvent.textContent = event.event;
+        detailEvent.classList.remove('hidden'); // Asegúrate de que no esté oculto
+    } else {
+      detailEvent.textContent = ""; // Opcional, para limpiar el texto
+      detailEvent.classList.add('hidden'); // Añade la clase para ocultar
+    }
+
+    //description
     detailDescription.innerHTML = event.description || "<p>Descripción no disponible</p>";
 
     // Limpiar imágenes previas
