@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración | Grupo Scout #572 Nuestra Señora de Luján</title>
+  
+  <link rel="icon" type="image/png" href="ico/logo_lujan.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Barra superior del panel -->
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <div class="brand">
+        <img src="ico/logo_lujan.png" alt="Logo Luján" class="admin-logo">
+        <div>
+          <h1>Panel de Administración</h1>
+          <span>Grupo Scout Nº 572 "Nuestra Señora de Luján"</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <a href="index.html" class="btn-public-site" target="_blank" rel="noopener noreferrer">
+          &larr; Ver Sitio Público
+        </a>
+        <div id="user-session" class="user-session hidden">
+          <span class="user-badge" id="logged-user-name">dirigente</span>
+          <button type="button" id="logout-btn" class="btn-logout">Cerrar Sesión</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notificaciones Toast -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Contenedor Principal -->
+  <main class="admin-main">
+
+    <!-- Pantalla de Login (Si no está autenticado) -->
+    <section id="login-section" class="login-container">
+      <div class="login-card">
+        <div class="login-icon">🔒</div>
+        <h2>Acceso de Dirigentes</h2>
+        <p class="login-subtitle">Ingrese las credenciales del archivo de configuración para administrar el Libro de Oro y las Novedades.</p>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-username">Usuario</label>
+            <input type="text" id="login-username" name="username" required autocomplete="username" placeholder="Nombre de usuario">
+          </div>
+
+          <div class="form-group">
+            <label for="login-password">Contraseña</label>
+            <input type="password" id="login-password" name="password" required autocomplete="current-password" placeholder="Contraseña">
+          </div>
+
+          <div id="login-error" class="error-banner hidden"></div>
+
+          <button type="submit" id="login-submit-btn" class="btn-primary btn-block">
+            Ingresar al Panel
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Panel de Administración (Una vez autenticado) -->
+    <section id="dashboard-section" class="dashboard-container hidden">
+
+      <!-- Pestañas de navegación -->
+      <nav class="admin-tabs" role="tablist">
+        <button type="button" class="tab-btn active" data-tab="tab-history" role="tab" aria-selected="true">
+          📖 Libro de Oro (Años)
+        </button>
+        <button type="button" class="tab-btn" data-tab="tab-novedades" role="tab" aria-selected="false">
+          📢 Novedades y Avisos
+        </button>
+      </nav>
+
+      <!-- PESTAÑA 1: GESTIÓN DEL LIBRO DE ORO -->
+      <div id="tab-history" class="tab-content active">
+        <div class="content-toolbar">
+          <div class="toolbar-title">
+            <h3>Capítulos Históricos</h3>
+            <p>Administra los relatos, acontecimientos y fotos por año en el Libro de Oro.</p>
+          </div>
+          <div class="toolbar-actions">
+            <input type="text" id="history-search" class="search-input" placeholder="Buscar por año o contenido...">
+            <button type="button" id="btn-new-year" class="btn-primary">+ Nuevo Año</button>
+          </div>
+        </div>
+
+        <div class="items-table-wrapper">
+          <table class="admin-table" id="history-table">
+            <thead>
+              <tr>
+                <th style="width: 90px;">Año</th>
+                <th>Título / Acontecimiento</th>
+                <th>Fecha / Conmemoración</th>
+                <th style="width: 100px;">Fotos</th>
+                <th style="width: 140px; text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body">
+              <!-- Renderizado dinámico -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 2: GESTIÓN DE NOVEDADES -->
+      <div id="tab-novedades" class="tab-content hidden">
+        <div class="content-toolbar">
+          <div class="toolbar-title">
+            <h3>Novedades y Circulares</h3>
+            <p>Publica avisos, convocatorias y notas para toda la comunidad scout.</p>
+          </div>
+          <div class="toolbar-actions">
+            <input type="text" id="novedades-search" class="search-input" placeholder="Buscar novedades...">
+            <button type="button" id="btn-new-novedad" class="btn-primary">+ Nueva Novedad</button>
+          </div>
+        </div>
+
+        <div class="items-table-wrapper">
+          <table class="admin-table" id="novedades-table">
+            <thead>
+              <tr>
+                <th style="width: 110px;">Fecha</th>
+                <th>Título</th>
+                <th style="width: 130px;">Categoría</th>
+                <th style="width: 100px;">Estado</th>
+                <th style="width: 140px; text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="novedades-table-body">
+              <!-- Renderizado dinámico -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       MODAL: EDITOR DE CAPÍTULO DEL LIBRO DE ORO
+       ========================================================================== -->
+  <div id="modal-history" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-history-title">
+    <div class="modal-card">
+      <header class="modal-header">
+        <h3 id="modal-history-title">Editar Capítulo del Libro de Oro</h3>
+        <button type="button" class="btn-close-modal" id="close-modal-history" aria-label="Cerrar">&times;</button>
+      </header>
+
+      <form id="form-history" class="modal-form">
+        <div class="form-row">
+          <div class="form-group col-4">
+            <label for="edit-year">Año *</label>
+            <input type="number" id="edit-year" name="year" required min="1900" max="2100" placeholder="Ej: 2022">
+          </div>
+          <div class="form-group col-8">
+            <label for="edit-title">Título del Capítulo / Lema</label>
+            <input type="text" id="edit-title" name="title" placeholder="Ej: 40º Aniversario del Grupo">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="edit-event">Evento o Fecha de Inicio</label>
+            <input type="text" id="edit-event" name="event" placeholder="Ej: 28 de agosto de 2022">
+          </div>
+          <div class="form-group col-6">
+            <label for="edit-url">Enlace Relacionado (Opcional)</label>
+            <input type="url" id="edit-url" name="url" placeholder="https://...">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-description">Relato Histórico *</label>
+          <div class="editor-toolbar">
+            <button type="button" class="editor-tool-btn" data-tag="p" title="Añadir Párrafo">&lt;p&gt;</button>
+            <button type="button" class="editor-tool-btn" data-tag="strong" title="Texto en Negrita">&lt;b&gt;</button>
+            <button type="button" class="editor-tool-btn" data-tag="em" title="Texto en Cursiva">&lt;i&gt;</button>
+          </div>
+          <textarea id="edit-description" name="description" rows="9" placeholder="Escriba los acontecimientos, campamentos, pases de rama y anécdotas de este año..."></textarea>
+          <small class="form-help">Puede utilizar párrafos HTML simples: &lt;p&gt;Texto&lt;/p&gt; y etiquetas &lt;strong&gt;Nombre&lt;/strong&gt;.</small>
+        </div>
+
+        <!-- Zona de Imágenes -->
+        <div class="form-group">
+          <label>Fotografías del Año</label>
+          
+          <div class="upload-dropzone" id="history-dropzone">
+            <span class="upload-icon">📷</span>
+            <p>Arrastre fotografías aquí o <strong>haga clic para seleccionar</strong></p>
+            <input type="file" id="history-file-input" multiple accept="image/*" class="file-input-hidden">
+          </div>
+
+          <div id="upload-status-history" class="upload-status hidden"></div>
+
+          <!-- Miniaturas de fotos existentes -->
+          <div class="existing-photos-wrapper">
+            <label class="sublabel">Fotos actuales asociadas a este año:</label>
+            <div id="history-photos-grid" class="photos-preview-grid"></div>
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn-secondary" id="cancel-modal-history">Cancelar</button>
+          <button type="submit" class="btn-primary" id="save-history-btn">Guardar Capítulo</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: EDITOR DE NOVEDADES
+       ========================================================================== -->
+  <div id="modal-novedad" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-novedad-title">
+    <div class="modal-card">
+      <header class="modal-header">
+        <h3 id="modal-novedad-title">Publicar Novedad</h3>
+        <button type="button" class="btn-close-modal" id="close-modal-novedad" aria-label="Cerrar">&times;</button>
+      </header>
+
+      <form id="form-novedad" class="modal-form">
+        <input type="hidden" id="novedad-id" name="id">
+
+        <div class="form-row">
+          <div class="form-group col-8">
+            <label for="novedad-title">Título de la Novedad *</label>
+            <input type="text" id="novedad-title" name="title" required placeholder="Ej: Campamento de Verano 2026">
+          </div>
+          <div class="form-group col-4">
+            <label for="novedad-date">Fecha *</label>
+            <input type="date" id="novedad-date" name="date" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="novedad-category">Categoría</label>
+            <select id="novedad-category" name="category">
+              <option value="Institucional">Institucional</option>
+              <option value="Manada">Manada</option>
+              <option value="Tropa Scout">Tropa Scout</option>
+              <option value="Caminantes">Caminantes</option>
+              <option value="Clan Rover">Clan Rover</option>
+              <option value="Campamento">Campamento</option>
+              <option value="Comunidad">Comunidad y Familias</option>
+            </select>
+          </div>
+          <div class="form-group col-6">
+            <label for="novedad-image">Imagen Destacada (Ruta o URL)</label>
+            <input type="text" id="novedad-image" name="image" placeholder="img/ejemplo.jpg">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="novedad-summary">Resumen Breve</label>
+          <input type="text" id="novedad-summary" name="summary" placeholder="Una o dos frases que sintetizan la noticia...">
+        </div>
+
+        <div class="form-group">
+          <label for="novedad-content">Contenido de la Noticia *</label>
+          <textarea id="novedad-content" name="content" rows="6" placeholder="Detalle toda la información para las familias y los miembros del grupo..."></textarea>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" id="novedad-published" name="published" checked>
+            Publicar inmediatamente en la página web
+          </label>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn-secondary" id="cancel-modal-novedad">Cancelar</button>
+          <button type="submit" class="btn-primary" id="save-novedad-btn">Guardar Novedad</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

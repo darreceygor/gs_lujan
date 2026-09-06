@@ -1,0 +1,25 @@
+{
+  "name": "gs_lujan",
+  "version": "1.0.0",
+  "description": "Sitio Web y Libro de Oro del Grupo Scout #572 Nuestra Señora de Luján",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "scout",
+    "lujan",
+    "libro-de-oro",
+    "historia"
+  ],
+  "author": "Grupo Scout Nuestra Señora de Luján",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "cors": "^2.8.5"
+  }
+}
