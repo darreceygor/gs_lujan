@@ -78,6 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType && !contentType.includes("json") && !contentType.includes("text/plain")) {
+        throw new Error(`Formato inesperado devuelto por el servidor (${contentType})`);
+      }
       allEvents = await response.json();
       
       // Ordenar cronológicamente por año
@@ -511,6 +515,8 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await fetch("json/novedades.json");
       if (!res.ok) return;
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType && !contentType.includes("json") && !contentType.includes("text/plain")) return;
       const novedades = await res.json();
       const published = novedades.filter(n => n.published !== false);
       published.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));

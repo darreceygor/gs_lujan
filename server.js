@@ -90,11 +90,12 @@ function writeJsonFile(filePath, data) {
 }
 
 // ==========================================
-// RUTAS DE AUTENTICACIÓN
+// RUTAS DE LA API (ROUTER DUAL /api Y /)
 // ==========================================
+const apiRouter = express.Router();
 
 // Login con credenciales del .env
-app.post('/api/auth/login', (req, res) => {
+apiRouter.post('/auth/login', (req, res) => {
   const { username, password } = req.body;
   
   if (!username || !password) {
@@ -119,7 +120,7 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 // Verificar sesión
-app.get('/api/auth/verify', requireAuth, (req, res) => {
+apiRouter.get('/auth/verify', requireAuth, (req, res) => {
   res.json({ success: true, user: req.user.username });
 });
 
@@ -128,14 +129,14 @@ app.get('/api/auth/verify', requireAuth, (req, res) => {
 // ==========================================
 
 // Obtener historia
-app.get('/api/history', (req, res) => {
+apiRouter.get('/history', (req, res) => {
   const history = readJsonFile(HISTORY_FILE);
   history.sort((a, b) => a.year - b.year);
   res.json(history);
 });
 
 // Guardar / Actualizar capítulo de año
-app.post('/api/history', requireAuth, (req, res) => {
+apiRouter.post('/history', requireAuth, (req, res) => {
   const { year, title, event, description, images, url } = req.body;
   const numYear = parseInt(year, 10);
 
@@ -172,7 +173,7 @@ app.post('/api/history', requireAuth, (req, res) => {
 });
 
 // Eliminar capítulo de año
-app.delete('/api/history/:year', requireAuth, (req, res) => {
+apiRouter.delete('/history/:year', requireAuth, (req, res) => {
   const numYear = parseInt(req.params.year, 10);
   if (isNaN(numYear)) {
     return res.status(400).json({ error: 'Año inválido.' });
@@ -195,14 +196,14 @@ app.delete('/api/history/:year', requireAuth, (req, res) => {
 // ==========================================
 
 // Obtener novedades
-app.get('/api/novedades', (req, res) => {
+apiRouter.get('/novedades', (req, res) => {
   const novedades = readJsonFile(NOVEDADES_FILE);
   novedades.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
   res.json(novedades);
 });
 
 // Guardar o actualizar novedad
-app.post('/api/novedades', requireAuth, (req, res) => {
+apiRouter.post('/novedades', requireAuth, (req, res) => {
   const { id, title, date, category, summary, content, image, published } = req.body;
 
   if (!title || !title.trim()) {
@@ -241,7 +242,7 @@ app.post('/api/novedades', requireAuth, (req, res) => {
 });
 
 // Eliminar novedad
-app.delete('/api/novedades/:id', requireAuth, (req, res) => {
+apiRouter.delete('/novedades/:id', requireAuth, (req, res) => {
   const { id } = req.params;
   let novedades = readJsonFile(NOVEDADES_FILE);
   const initialLen = novedades.length;
@@ -259,7 +260,7 @@ app.delete('/api/novedades/:id', requireAuth, (req, res) => {
 // SUBIDA DE IMÁGENES
 // ==========================================
 
-app.post('/api/upload', requireAuth, upload.array('photos', 20), (req, res) => {
+apiRouter.post('/upload', requireAuth, upload.array('photos', 20), (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: 'No se enviaron archivos para subir.' });
   }
@@ -271,6 +272,10 @@ app.post('/api/upload', requireAuth, upload.array('photos', 20), (req, res) => {
     files: uploadedPaths
   });
 });
+
+// Montar router para que responda tanto en /api/... como en /...
+app.use('/api', apiRouter);
+app.use('/', apiRouter);
 
 // ==========================================
 // ARCHIVOS ESTÁTICOS Y RUTAS WEB
@@ -294,11 +299,15 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`==============================================`);
-  console.log(` Grupo Scout #572 'Nuestra Señora de Luján'`);
-  console.log(` Servidor activo en http://localhost:${PORT}`);
-  console.log(` Panel Administrador: http://localhost:${PORT}/admin`);
-  console.log(`==============================================`);
-});
+// Iniciar servidor local o exportar para serverless (Vercel)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`==============================================`);
+    console.log(` Grupo Scout #572 'Nuestra Señora de Luján'`);
+    console.log(` Servidor activo en http://localhost:${PORT}`);
+    console.log(` Panel Administrador: http://localhost:${PORT}/admin`);
+    console.log(`==============================================`);
+  });
+}
+
+module.exports = app;

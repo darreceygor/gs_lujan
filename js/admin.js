@@ -1,12 +1,44 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Configuración y estado
-  const API_BASE = "";
+  // Si se accede desde un puerto local estático (ej: Live Server en 5500), conectar al backend en 3000
+  const isLocalStaticPort = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") && 
+                            window.location.port !== "" && window.location.port !== "3000";
+  const API_BASE = isLocalStaticPort ? "http://localhost:3000" : "";
   let authToken = localStorage.getItem("gs_lujan_token");
   let currentUser = localStorage.getItem("gs_lujan_user");
 
   let historyData = [];
   let novedadesData = [];
   let currentHistoryImages = [];
+
+  // Helper para procesar respuestas JSON de forma segura evitando SyntaxError con páginas de error HTML (404/500)
+  async function parseJsonResponse(response) {
+    const contentType = response.headers.get("content-type") || "";
+    if (!response.ok) {
+      if (contentType.includes("application/json")) {
+        const errJson = await response.json();
+        throw new Error(errJson.error || errJson.message || `Error del servidor (${response.status})`);
+      } else {
+        const text = await response.text();
+        if (response.status === 404) {
+          throw new Error("El servicio backend no está disponible en este servidor (Error 404). Si ejecuta localmente, verifique que 'node server.js' esté activo.");
+        }
+        if (response.status === 405) {
+          throw new Error("El método HTTP no está permitido en este servidor estático (Error 405).");
+        }
+        const cleanSnippet = text.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 100);
+        throw new Error(`Error del servidor (${response.status}): ${cleanSnippet || "Respuesta no válida"}`);
+      }
+    }
+
+    if (!contentType.includes("application/json")) {
+      const text = await response.text();
+      const cleanSnippet = text.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
+      throw new Error(`Respuesta no válida del servidor (no es JSON): ${cleanSnippet}`);
+    }
+
+    return await response.json();
+  }
 
   // Elementos DOM principales
   const loginSection = document.getElementById("login-section");
@@ -112,13 +144,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const res = await authFetch(`${API_BASE}/api/auth/verify`);
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (data.success) {
         showDashboard(data.user);
       } else {
         handleLogout();
       }
     } catch (e) {
+      console.warn("No se pudo verificar la sesión con el backend:", e.message);
       handleLogout();
     }
   }
@@ -166,9 +199,9 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ username, password })
       });
 
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
 
-      if (!res.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.error || "Error de inicio de sesión");
       }
 
@@ -218,12 +251,24 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadHistoryData() {
     try {
       const res = await fetch(`${API_BASE}/api/history`);
-      if (!res.ok) throw new Error("Error cargando historia");
-      historyData = await res.json();
+      historyData = await parseJsonResponse(res);
       historyData.sort((a, b) => b.year - a.year);
       renderHistoryTable();
     } catch (err) {
-      showToast("Error al cargar los capítulos del Libro de Oro", "error");
+      console.warn("Fallo carga desde /api/history, intentando fallback estático:", err.message);
+      try {
+        const staticRes = await fetch("json/history.json");
+        if (staticRes.ok) {
+          historyData = await staticRes.json();
+          historyData.sort((a, b) => b.year - a.year);
+          renderHistoryTable();
+          showToast("Capítulos cargados en modo lectura (servidor backend no disponible)", "warning");
+          return;
+        }
+      } catch (staticErr) {
+        console.error("Error en fallback estático:", staticErr);
+      }
+      showToast("Error al cargar los capítulos del Libro de Oro: " + err.message, "error");
     }
   }
 
@@ -391,10 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
         body: formData
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Error al subir imágenes");
-      }
+      const data = await parseJsonResponse(res);
 
       // Agregar las nuevas rutas a la lista
       currentHistoryImages.push(...data.files);
@@ -433,10 +475,7 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Error al guardar el capítulo");
-      }
+      const data = await parseJsonResponse(res);
 
       showToast(data.message, "success");
       closeHistoryModal();
@@ -460,10 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
         method: "DELETE"
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Error al eliminar");
-      }
+      const data = await parseJsonResponse(res);
 
       showToast(data.message, "success");
       loadHistoryData();
@@ -479,12 +515,24 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadNovedadesData() {
     try {
       const res = await fetch(`${API_BASE}/api/novedades`);
-      if (!res.ok) throw new Error("Error cargando novedades");
-      novedadesData = await res.json();
+      novedadesData = await parseJsonResponse(res);
       novedadesData.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
       renderNovedadesTable();
     } catch (err) {
-      showToast("Error al cargar las novedades", "error");
+      console.warn("Fallo carga desde /api/novedades, intentando fallback estático:", err.message);
+      try {
+        const staticRes = await fetch("json/novedades.json");
+        if (staticRes.ok) {
+          novedadesData = await staticRes.json();
+          novedadesData.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+          renderNovedadesTable();
+          showToast("Novedades cargadas en modo lectura (servidor backend no disponible)", "warning");
+          return;
+        }
+      } catch (staticErr) {
+        console.error("Error en fallback estático de novedades:", staticErr);
+      }
+      showToast("Error al cargar las novedades: " + err.message, "error");
     }
   }
 
@@ -588,10 +636,7 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Error al guardar novedad");
-      }
+      const data = await parseJsonResponse(res);
 
       showToast(data.message, "success");
       closeNovedadModal();
@@ -615,10 +660,7 @@ document.addEventListener("DOMContentLoaded", () => {
         method: "DELETE"
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Error al eliminar");
-      }
+      const data = await parseJsonResponse(res);
 
       showToast(data.message, "success");
       loadNovedadesData();
