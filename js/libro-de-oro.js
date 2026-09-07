@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Configuración y rutas
-  const historiaPath = "json/history.json";
+  const historiaPath = "/json/history.json";
 
   // Elementos DOM de la línea de tiempo
   const timelineScrollContainer = document.getElementById("timeline-scroll-container");

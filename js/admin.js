@@ -257,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       console.warn("Fallo carga desde /api/history, intentando fallback estático:", err.message);
       try {
-        const staticRes = await fetch("json/history.json");
+        const staticRes = await fetch("/json/history.json");
         if (staticRes.ok) {
           historyData = await staticRes.json();
           historyData.sort((a, b) => b.year - a.year);
@@ -521,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       console.warn("Fallo carga desde /api/novedades, intentando fallback estático:", err.message);
       try {
-        const staticRes = await fetch("json/novedades.json");
+        const staticRes = await fetch("/json/novedades.json");
         if (staticRes.ok) {
           novedadesData = await staticRes.json();
           novedadesData.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));

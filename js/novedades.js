@@ -37,7 +37,7 @@
 
       // Intentar primero desde el endpoint de la API
       try {
-        const apiRes = await fetch("api/novedades");
+        const apiRes = await fetch("/api/novedades");
         if (apiRes.ok) {
           novedades = await apiRes.json();
         }
@@ -46,7 +46,7 @@
       // Si no obtuvo datos de la API, intentar json estático
       if (!Array.isArray(novedades) || novedades.length === 0) {
         try {
-          const fileRes = await fetch("json/novedades.json");
+          const fileRes = await fetch("/json/novedades.json");
           if (fileRes.ok) {
             novedades = await fileRes.json();
           }
