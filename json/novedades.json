@@ -3,7 +3,7 @@
     "id": "nov-1788733155393",
     "title": "Cambio de nombre de comunidad",
     "date": "2026-08-06",
-    "category": "Clan Rover",
+    "category": "Comunidad Rover",
     "summary": "",
     "content": "En reunión de Consejo de Grupo, el representante de la actual Comunidad Rover San Pablo, Thiago Gallo, hace presente un documento con la solicitud de nuevo nombre, la historia detrás del mismo y el fundamento del por qué desean realizar el cambio.\nSiendo aceptada la moción, a partir de la fecha, la Comunidad Rover pasará a llamarse HUAYNA CAPAC",
     "image": "https://catalogo.scouts.org.ar/wp-content/uploads/2024/07/Bandera-Rama-Rovers.png",
@@ -18,6 +18,16 @@
     "summary": "Damos inicio a un nuevo año de juegos, campamentos y servicio para todas las ramas.",
     "content": "<p>Nos complace invitar a todas las familias, lobatos, scouts, caminantes y rovers al inicio oficial del ciclo de actividades. Nos encontraremos en el predio parroquial con los uniformes listos y mucho entusiasmo para reencontrarnos en el gran juego scout.</p><p>¡Siempre Listos!</p>",
     "image": "ico/logo_lujan.png",
+    "published": true
+  },
+  {
+    "id": "nov-2",
+    "title": "Patrulla Fénix",
+    "date": "2026-07-20",
+    "category": "Institucional",
+    "summary": "Creación de la patrulla de educadores del GS Nuestra Señora de Luján.",
+    "content": "",
+    "image": "img/novedades/fenix.jpeg",
     "published": true
   }
 ]
