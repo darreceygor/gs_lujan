@@ -393,13 +393,41 @@ apiRouter.post('/upload', requireAuth, upload.array('photos', 20), (req, res) =>
   });
 });
 
-// Montar router para que responda tanto en /api/... como en /...
+// Montar router para que responda en /api/...
 app.use('/api', apiRouter);
-app.use('/', apiRouter);
+
+// Compatibilidad hacia atrás para carrousel-images si se llama sin /api
+app.get('/carrousel-images', (req, res, next) => {
+  apiRouter(req, res, next);
+});
 
 // ==========================================
-// ARCHIVOS ESTÁTICOS Y RUTAS WEB
+// ARCHIVOS ESTÁTICOS Y RUTAS WEB (URLS LIMPIAS)
 // ==========================================
+
+// Redirigir URLs que terminan en .html a su versión limpia sin extensión
+app.use((req, res, next) => {
+  if (req.path.endsWith('.html')) {
+    const clean = req.path.slice(0, -5);
+    const query = req.url.slice(req.path.length);
+    const target = (clean === '/index' || clean === '/novedades') ? '/' : clean;
+    return res.redirect(301, (target || '/') + query);
+  }
+  next();
+});
+
+// Servir páginas públicas en URLs limpias
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/index', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/novedades', (req, res) => {
+  res.redirect(301, '/');
+});
 
 // Servir panel de administración en /admin
 app.get('/admin', (req, res) => {
@@ -411,11 +439,11 @@ app.get('/libro-de-oro', (req, res) => {
   res.sendFile(path.join(__dirname, 'libro-de-oro.html'));
 });
 
-// Servir estáticos
+// Servir estáticos (con soporte para extensiones .html)
 if (IS_SERVERLESS) {
   app.use('/img', express.static(UPLOAD_DIR));
 }
-app.use(express.static(__dirname));
+app.use(express.static(__dirname, { extensions: ['html'] }));
 
 // Manejo de errores de multer
 app.use((err, req, res, next) => {
