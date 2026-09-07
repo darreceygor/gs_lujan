@@ -4,8 +4,8 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
+      "source": "/carrousel-images",
+      "destination": "/api/carrousel-images"
     }
   ]
 }

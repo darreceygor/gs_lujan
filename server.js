@@ -393,6 +393,26 @@ apiRouter.post('/upload', requireAuth, upload.array('photos', 20), (req, res) =>
   });
 });
 
+// En entorno serverless, asegurar prefijo /api si la función se invoca directamente
+app.use((req, res, next) => {
+  if (IS_SERVERLESS && !req.url.startsWith('/api') && !req.url.startsWith('/img')) {
+    const apiEndpoints = ['/auth', '/novedades', '/history', '/carrousel-images', '/upload'];
+    if (apiEndpoints.some(ep => req.url.startsWith(ep))) {
+      req.url = '/api' + req.url;
+    }
+  }
+  next();
+});
+
+// Endpoint base de la API en /api (evita redirección 301 con trailing slash en Vercel)
+app.get('/api', (req, res) => {
+  res.json({
+    status: 'ok',
+    app: 'Grupo Scout #572 Nuestra Señora de Luján API',
+    version: '1.0.0'
+  });
+});
+
 // Montar router para que responda en /api/...
 app.use('/api', apiRouter);
 

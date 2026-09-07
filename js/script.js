@@ -600,7 +600,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadImages() {
       let imageList = [];
       try {
-        const res = await fetch("carrousel-images");
+        const res = await fetch("api/carrousel-images");
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {
@@ -613,7 +613,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (imageList.length === 0) {
         try {
-          const res2 = await fetch("api/carrousel-images");
+          const res2 = await fetch("carrousel-images");
           if (res2.ok) {
             const data2 = await res2.json();
             if (Array.isArray(data2) && data2.length > 0) {
