@@ -124,9 +124,21 @@ apiRouter.get('/auth/verify', requireAuth, (req, res) => {
   res.json({ success: true, user: req.user.username });
 });
 
-// ==========================================
-// RUTAS DE HISTORIA / LIBRO DE ORO
-// ==========================================
+// Obtener imágenes para el carrusel de bienvenida desde img/carrousel
+apiRouter.get('/carrousel-images', (req, res) => {
+  const carrouselDir = path.join(__dirname, 'img', 'carrousel');
+  if (fs.existsSync(carrouselDir)) {
+    try {
+      const files = fs.readdirSync(carrouselDir)
+        .filter(f => /\.(jpe?g|png|webp|gif|svg)$/i.test(f))
+        .map(f => encodeURI(`img/carrousel/${f}`));
+      return res.json(files);
+    } catch (e) {
+      console.error('Error leyendo fotos del carrousel:', e.message);
+    }
+  }
+  res.json([]);
+});
 
 // Obtener historia
 apiRouter.get('/history', (req, res) => {
@@ -284,6 +296,11 @@ app.use('/', apiRouter);
 // Servir panel de administración en /admin
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// Servir Libro de Oro en /libro-de-oro
+app.get('/libro-de-oro', (req, res) => {
+  res.sendFile(path.join(__dirname, 'libro-de-oro.html'));
 });
 
 // Servir estáticos

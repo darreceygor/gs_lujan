@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Libro de Oro y memoria histórica del Grupo Scout #572 Nuestra Señora de Luján (Distrito 2 - Zona 14, Olavarría). Historia, campamentos, fotografías y vivencias desde 1982.">
+  <meta name="keywords" content="Grupo Scout, Nuestra Señora de Luján, Olavarría, Scouts de Argentina, Libro de Oro, Escultismo, Distrito 2, Zona 14">
+  <meta name="author" content="Grupo Scout Nuestra Señora de Luján">
+  
+  <!-- Open Graph / Redes Sociales -->
+  <meta property="og:title" content="Grupo Scout #572 Nuestra Señora de Luján - Libro de Oro">
+  <meta property="og:description" content="Línea de tiempo histórica y memoria viva del Grupo Scout Nuestra Señora de Luján desde su fundación en 1982.">
+  <meta property="og:image" content="ico/logo_lujan.png">
+  <meta property="og:type" content="website">
+
+  <title>Libro de Oro | Grupo Scout #572 Nuestra Señora de Luján</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="ico/logo_lujan.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  
+
+  <!-- Barra superior y navegación -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <a href="#inicio" class="brand-link" id="brand-home-link">
+          <img src="ico/logo_lujan.png" alt="Insignia Grupo Scout Nuestra Señora de Luján" class="logo">
+          <div class="brand-text">
+            <span class="group-number">Grupo Scout #572</span>
+            <h1 class="group-name">Nuestra Señora de Luján</h1>
+            <span class="group-district">Distrito 2 • Zona 14 • Olavarría</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="navbar" aria-label="Navegación principal">
+        <ul class="nav-links">
+          <li><a href="index.html" id="nav-novedades">Novedades</a></li>
+          <li><a href="libro-de-oro.html" id="nav-timeline" class="active">Libro de Oro</a></li>
+        </ul>
+        <div class="social-links" aria-label="Redes sociales del grupo">
+          <a href="https://www.facebook.com/gruposcout.nuestrasradelujan" target="_blank" rel="noopener noreferrer" title="Facebook del Grupo" aria-label="Facebook">
+            <img src="ico/facebook.png" class="ico_rrss" alt="Facebook">
+          </a>
+          <a href="https://www.instagram.com/scout_lujan/" target="_blank" rel="noopener noreferrer" title="Instagram del Grupo" aria-label="Instagram">
+            <img src="ico/instagram.png" class="ico_rrss" alt="Instagram">
+          </a>
+          <a href="mailto:gruposcout572@gmail.com" title="Enviar correo electrónico" aria-label="Correo electrónico">
+            <img src="ico/correo.png" class="ico_rrss" alt="Correo">
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="container" id="inicio">
+
+    <!-- Sección de Línea de Tiempo (Libro de Oro) -->
+    <section class="timeline-section" id="libro-de-oro" aria-labelledby="timeline-heading">
+      <div class="timeline-header">
+        <div class="timeline-title-area">
+          <h2 id="timeline-heading">Libro de Oro</h2>
+          <p class="timeline-subtitle">Explora más de 44 años de trayectoria, anécdotas y recuerdos de nuestro grupo scout (1982 - 2026)</p>
+        </div>
+
+        <!-- Barra de herramientas: Filtro de décadas y buscador -->
+        <div class="timeline-toolbar">
+          <div class="decade-filters" role="group" aria-label="Filtrar por década">
+            <button type="button" class="decade-btn active" data-decade="all">Todos</button>
+            <button type="button" class="decade-btn" data-decade="1980">80s</button>
+            <button type="button" class="decade-btn" data-decade="1990">90s</button>
+            <button type="button" class="decade-btn" data-decade="2000">00s</button>
+            <button type="button" class="decade-btn" data-decade="2010">10s</button>
+            <button type="button" class="decade-btn" data-decade="2020">20s</button>
+          </div>
+
+          <div class="search-box">
+            <input type="text" id="search-input" placeholder="Buscar por persona, lugar, evento..." aria-label="Buscar en el Libro de Oro">
+            <button type="button" id="clear-search" class="clear-search-btn hidden" aria-label="Limpiar búsqueda">&times;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carrusel de botones de años -->
+      <div class="timeline-nav-wrapper">
+        <button type="button" id="scroll-left" class="scroll-arrow prev-arrow" aria-label="Años anteriores">
+          <img src="ico/arrow-prev.svg" alt="" aria-hidden="true">
+        </button>
+
+        <div class="timeline-container" id="timeline-scroll-container">
+          <div id="timeline" class="timeline" role="tablist" aria-label="Línea de tiempo de años"></div>
+        </div>
+
+        <button type="button" id="scroll-right" class="scroll-arrow next-arrow" aria-label="Años posteriores">
+          <img src="ico/arrow-next.svg" alt="" aria-hidden="true">
+        </button>
+      </div>
+
+      <div id="search-status" class="search-status hidden" aria-live="polite"></div>
+    </section>
+
+    <!-- Ficha de detalles del año seleccionado -->
+    <section id="details" class="details-card hidden" aria-live="polite" aria-label="Detalles del año">
+      <!-- Barra superior de la ficha -->
+      <div class="details-nav-bar">
+        <button type="button" id="close-details" class="back-btn" aria-label="Cerrar y volver a la introducción">
+          <span aria-hidden="true">&larr;</span> Volver a la reseña inicial
+        </button>
+        <div class="year-pager">
+          <button type="button" id="prev-year-btn" class="pager-btn" aria-label="Año anterior">
+            &larr; <span id="prev-year-label">Anterior</span>
+          </button>
+          <button type="button" id="next-year-btn" class="pager-btn" aria-label="Año siguiente">
+            <span id="next-year-label">Siguiente</span> &rarr;
+          </button>
+        </div>
+      </div>
+
+      <article class="details-body">
+        <header class="detail-header">
+          <div class="year-badge" id="detail-year">1982</div>
+          <div class="title-meta">
+            <h3 id="detail-title" class="detail-title"></h3>
+            <span id="detail-event" class="detail-event-tag"></span>
+          </div>
+        </header>
+
+        <div id="detail-description" class="detail-description"></div>
+
+        <!-- Galería fotográfica del año -->
+        <section class="gallery-wrapper" id="gallery-section">
+          <div class="gallery-header" id="gallery-header">
+            <h4>Registro Fotográfico</h4>
+            <span class="photo-count" id="photo-count">0 fotos</span>
+          </div>
+          <div id="detail-images" class="gallery-grid"></div>
+        </section>
+      </article>
+
+      <!-- Barra de navegación inferior -->
+      <div class="details-bottom-bar">
+        <button type="button" id="bottom-prev-year-btn" class="pager-btn">&larr; Año anterior</button>
+        <button type="button" id="bottom-close-details" class="back-btn">Volver a la historia principal</button>
+        <button type="button" id="bottom-next-year-btn" class="pager-btn">Año siguiente &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Contenido inicial / Introducción a la Fundación del Grupo -->
+    <section id="intro-content" class="intro-card">
+      <div class="intro-header">
+        <span class="badge-tag">Historia de Origen • 1982</span>
+        <h2 id="introduccion">Los Comienzos de Nuestra Comunidad Scout</h2>
+        <p class="intro-lead">
+          Conoce cómo un grupo de jóvenes y adultos comprometidos soñó y fundó el Grupo Scout en la Parroquia Nuestra Señora de Luján de Olavarría.
+        </p>
+      </div>
+
+      <div class="intro-story">
+        <p>
+          La idea de formar otro grupo scout en Olavarría era vieja, ya que se le había sugerido en varias oportunidades a los integrantes del grupo scout <em>“MAXIMILIANO KOLBE” Nº 367</em> de la Parroquia Monte Viggiano.
+        </p>
+        <p>
+          El hecho comenzó a materializarse cuando <strong>Juan Luis Álvarez</strong>, proveniente del grupo <em>“San Carlos de Bolívar”</em>, habiendo trabajado un año en dicho grupo decide por iniciativa del comisionado de la región Azul, <strong>Eduardo Márquez</strong>, y el comisionado del Distrito Nº 2, <strong>Víctor Hugo Fitte</strong>, y con la ayuda de este último, formar un nuevo grupo scout.
+        </p>
+        <p>
+          El comisionado había conversado inicialmente con el párroco de Nuestra Señora de Fátima, pero este no estaba dispuesto a albergar un nuevo grupo scout en ese momento.
+        </p>
+        <p>
+          Luego, el comisionado de distrito y Juan Luis Álvarez deciden hablar con el párroco <strong>Daniel D’Imporzano</strong>, cura párroco de <strong>Nuestra Señora de Luján</strong>, a quien le gustó la idea. Sin embargo, no podía coordinar las actividades personalmente y necesitaba dirigentes responsables; por tanto sugirió presentar la propuesta al grupo juvenil parroquial para ver si alguien deseaba integrarse, aunque en un primer momento no hubo eco.
+        </p>
+        <p>
+          Víctor Hugo Fitte se encargó entonces de contactar a <strong>Daniel Loureyro</strong>, quien residía en Olavarría pero asistía al grupo scout de Sierras Bayas Nº 350 <em>“CRISTO REY”</em>.
+        </p>
+        <p>
+          Con motivo del inicio de clases aparece <strong>Jorge Omar Pérez</strong>, proveniente del grupo scout de Pirovano Nº 383 <em>“Santa Cruz”</em>, quien le comunica a Juan Luis el interés y la disposición que existía por parte de la comunidad parroquial.
+        </p>
+        <p>
+          Hasta este momento existía un gran entusiasmo, pero aún se requerían dirigentes formados y dispuestos a trabajar con firmeza; mientras tanto, Víctor asesoraba a Juan Luis sobre las funciones y la misión del jefe de grupo.
+        </p>
+        
+        <div class="highlight-callout">
+          <strong>Junio de 1982:</strong> En ocasión de la histórica visita de Su Santidad el Papa <strong>Juan Pablo II</strong> a la Argentina, jóvenes comprometidos manifestaron su entusiasmo y disponibilidad para formar el grupo: <strong>Claudia</strong> y <strong>Waldy Braunschweig</strong> (de la comunidad de Luján), <strong>Claudia Escudero</strong>, <strong>Silvia Andrade</strong> y <strong>Susana del Canto</strong>.
+        </div>
+
+        <p>
+          A fines de junio de 1982 se realiza en el Colegio San Antonio un curso de formación para dirigentes sobre metodología de la rama Rovers. Al término de las jornadas se reunieron con el comisionado regional, el comisionado de distrito y el director del curso (Daniel Chávez), participando Susana del Canto, Silvia Andrade, Waldy, Claudia y Juan Luis Álvarez.
+        </p>
+        <p>
+          A principios de julio, Juan Luis viaja a Sierras Bayas donde Víctor Hugo le presenta formalmente a <strong>Daniel Loureyro</strong>, quien manifiesta su gran alegría y disposición para sumarse activamente al nuevo grupo.
+        </p>
+        <p>
+          También en julio se lleva a cabo en la parroquia una reunión formativa con la presencia de: Silvia, Susana, Daniel y Sandra Loureyro, Claudia y Waldy Braunschweig, Alejandra Mazzolo, Claudia y Jackie Escudero, Jorge Pérez, José María Montero y Juan Luis Álvarez.
+        </p>
+        <p>
+          El <strong>7 de agosto de 1982</strong>, durante la cena en honor al párroco por su día, se sumaron <strong>Gustavo Cartolano</strong> y <strong>Graciela Padín</strong> (quienes esperaban su primer hijo) junto a <strong>Patricia Ortega</strong>. En esa velada, el Padre Daniel anunció con emoción que un grupo de jóvenes comenzaba a forjar el grupo scout: <em>“despacito y con pie firme”</em>.
+        </p>
+        <p>
+          El sábado <strong>14 de agosto</strong> visitaron las actividades en Sierras Bayas para vivenciar de cerca el método scout en acción. Esa misma jornada se fijó la fecha oficial de inicio: el <strong>28 de agosto de 1982</strong>, festividad de San Agustín.
+        </p>
+      </div>
+
+      <!-- Significado del Pañuelo de Grupo -->
+      <div class="scarf-card" id="panuelo">
+        <div class="scarf-visual" aria-hidden="true">
+          <div class="scarf-triangle">
+            <div class="scarf-stripe-outer"></div>
+            <div class="scarf-stripe-inner"></div>
+            <div class="scarf-emblem">✦</div>
+          </div>
+        </div>
+        <div class="scarf-info">
+          <h3>El Pañuelo del Grupo Scout #572</h3>
+          <p>
+            Ideado por Juan Luis Álvarez junto al comisionado regional, cada elemento del pañuelo posee un profundo significado:
+          </p>
+          <ul class="scarf-legend">
+            <li><span class="color-dot dot-celeste"></span><strong>Fondo Celeste:</strong> Representa el manto protector de la Virgen María Nuestra Señora de Luján y los colores de la Patria.</li>
+            <li><span class="color-dot dot-blanco"></span><strong>Cinta Blanca interior:</strong> Simboliza la pureza de intenciones, la verdad y la rectitud de corazón.</li>
+            <li><span class="color-dot dot-verde"></span><strong>Cinta Verde exterior:</strong> Expresa la esperanza scout y el amor por la naturaleza.</li>
+            <li><span class="color-dot dot-escudo"></span><strong>Vértice dorsal:</strong> Lleva el escudo de María Inmaculada, patrona de nuestra comunidad.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Visor de Fotos Lightbox (Modal de pantalla completa) -->
+  <div id="lightbox" class="lightbox hidden" role="dialog" aria-modal="true" aria-label="Visor de fotografía histórica">
+    <div class="lightbox-overlay" id="lightbox-overlay"></div>
+    <div class="lightbox-content">
+      <button type="button" id="lightbox-close" class="lightbox-btn close-btn" aria-label="Cerrar visor de imagen">&times;</button>
+      <button type="button" id="lightbox-prev" class="lightbox-btn nav-btn prev" aria-label="Foto anterior">&#10094;</button>
+      
+      <div class="lightbox-image-container">
+        <img id="lightbox-img" src="" alt="Fotografía histórica ampliada">
+        <div class="lightbox-caption">
+          <span id="lightbox-counter" class="lightbox-counter"></span>
+          <span id="lightbox-year" class="lightbox-year"></span>
+        </div>
+      </div>
+
+      <button type="button" id="lightbox-next" class="lightbox-btn nav-btn next" aria-label="Foto siguiente">&#10095;</button>
+    </div>
+  </div>
+
+  <!-- Pie de página -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-identity">
+        <img src="ico/logo_lujan.png" alt="Logo Grupo Scout Nuestra Señora de Luján" class="footer-logo">
+        <div>
+          <h4>Grupo Scout Nº 572 "Nuestra Señora de Luján"</h4>
+          <p>Distrito 2 • Zona 14 • Olavarría, Buenos Aires, Argentina</p>
+        </div>
+      </div>
+
+      <div class="footer-affiliation">
+        <img src="img/logo_saac.jpg" alt="Scouts de Argentina Asociación Civil" class="saac-logo">
+        <p class="affiliation-text">Miembro de <strong>Scouts de Argentina Asociación Civil</strong></p>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© <span id="current-year">2026</span> Grupo Scout Nuestra Señora de Luján. <em>"Siempre Listos"</em>.</p>
+        <div class="footer-admin-link-wrapper">
+          <button type="button" id="replay-intro-btn" class="admin-discreet-link" style="background: none; border: none; cursor: pointer; font-family: inherit;" title="Volver a reproducir la presentación inicial">
+            ✨ Ver presentación inicial
+          </button>
+          <span style="color: #94a3b8; font-size: 0.75rem;">•</span>
+          <a href="admin.html" class="admin-discreet-link" title="Acceso exclusivo para dirigentes del grupo">
+            🔒 Acceso Dirigentes
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/libro-de-oro.js"></script>
+</body>
+</html>
