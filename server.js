@@ -12,18 +12,35 @@ const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'ScoutLujan#572';
 const JWT_SECRET = process.env.JWT_SECRET || 'clave_secreta_default_scout_572';
 
-const HISTORY_FILE = path.join(__dirname, 'json', 'history.json');
-const NOVEDADES_FILE = path.join(__dirname, 'json', 'novedades.json');
-const UPLOAD_DIR = path.join(__dirname, 'img');
+// Detección de entorno Vercel / Serverless (donde el directorio raíz /var/task es de solo lectura)
+const IS_SERVERLESS = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
 
-// Asegurar directorios
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+const BUNDLED_JSON_DIR = path.join(__dirname, 'json');
+const BUNDLED_HISTORY_FILE = path.join(BUNDLED_JSON_DIR, 'history.json');
+const BUNDLED_NOVEDADES_FILE = path.join(BUNDLED_JSON_DIR, 'novedades.json');
+
+// Rutas de archivos: en Vercel/serverless se escribe en /tmp para evitar error EROFS
+const HISTORY_FILE = IS_SERVERLESS ? path.join('/tmp', 'history.json') : BUNDLED_HISTORY_FILE;
+const NOVEDADES_FILE = IS_SERVERLESS ? path.join('/tmp', 'novedades.json') : BUNDLED_NOVEDADES_FILE;
+const UPLOAD_DIR = IS_SERVERLESS ? path.join('/tmp', 'img') : path.join(__dirname, 'img');
+
+// Asegurar directorios de subida de forma segura
+try {
+  if (!fs.existsSync(UPLOAD_DIR)) {
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  }
+} catch (e) {
+  console.warn('Advertencia al verificar UPLOAD_DIR:', e.message);
 }
 
 // Configuración de Multer para subida de fotos
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    try {
+      if (!fs.existsSync(UPLOAD_DIR)) {
+        fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+      }
+    } catch (e) {}
     cb(null, UPLOAD_DIR);
   },
   filename: function (req, file, cb) {
@@ -73,9 +90,79 @@ function requireAuth(req, res, next) {
   }
 }
 
-// Helpers de lectura y escritura JSON
+// Sincronización opcional y automática con GitHub para persistencia permanente en Vercel
+async function syncFileToGitHub(fileName, data) {
+  const token = process.env.GITHUB_TOKEN;
+  const repo = process.env.GITHUB_REPO; // Formato: "usuario/repositorio"
+  const branch = process.env.GITHUB_BRANCH || 'main';
+
+  if (!token || !repo) {
+    return;
+  }
+
+  const repoFilePath = `json/${fileName}`;
+  const apiUrl = `https://api.github.com/repos/${repo}/contents/${repoFilePath}`;
+  const contentBase64 = Buffer.from(JSON.stringify(data, null, 2), 'utf8').toString('base64');
+
+  try {
+    let currentSha = null;
+    const getRes = await fetch(`${apiUrl}?ref=${branch}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'gs-lujan-server'
+      }
+    });
+
+    if (getRes.ok) {
+      const getJson = await getRes.json();
+      currentSha = getJson.sha;
+    }
+
+    const putBody = {
+      message: `Actualización automática de ${fileName} [skip ci]`,
+      content: contentBase64,
+      branch: branch
+    };
+    if (currentSha) {
+      putBody.sha = currentSha;
+    }
+
+    const putRes = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'gs-lujan-server'
+      },
+      body: JSON.stringify(putBody)
+    });
+
+    if (putRes.ok) {
+      console.log(`[GitHub Sync] Archivo ${repoFilePath} persistido en GitHub exitosamente.`);
+    } else {
+      const errText = await putRes.text();
+      console.error(`[GitHub Sync] Error al persistir en GitHub (${putRes.status}):`, errText);
+    }
+  } catch (err) {
+    console.error('[GitHub Sync] Error de red:', err.message);
+  }
+}
+
+// Helpers de lectura y escritura JSON compatibles con Serverless y local
 function readJsonFile(filePath, defaultVal = []) {
   try {
+    // En serverless, si el archivo aún no fue escrito en /tmp, leer el empaquetado inicial
+    if (IS_SERVERLESS && !fs.existsSync(filePath)) {
+      const baseName = path.basename(filePath);
+      const bundledPath = path.join(BUNDLED_JSON_DIR, baseName);
+      if (fs.existsSync(bundledPath)) {
+        return JSON.parse(fs.readFileSync(bundledPath, 'utf8'));
+      }
+      return defaultVal;
+    }
+
     if (!fs.existsSync(filePath)) return defaultVal;
     const content = fs.readFileSync(filePath, 'utf8');
     return JSON.parse(content);
@@ -86,7 +173,28 @@ function readJsonFile(filePath, defaultVal = []) {
 }
 
 function writeJsonFile(filePath, data) {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+  try {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (e) {
+    console.error(`Error escribiendo JSON en ${filePath}:`, e.message);
+    // Si falla por EROFS (sistema de archivos de solo lectura), guardar en /tmp
+    if (e.code === 'EROFS' && !filePath.startsWith('/tmp')) {
+      const fallbackPath = path.join('/tmp', path.basename(filePath));
+      console.warn(`[EROFS] Redirigiendo guardado a ${fallbackPath}`);
+      fs.writeFileSync(fallbackPath, JSON.stringify(data, null, 2), 'utf8');
+    } else {
+      throw e;
+    }
+  }
+
+  // Sincronización en segundo plano con GitHub si están configuradas las variables de entorno
+  syncFileToGitHub(path.basename(filePath), data).catch(err => {
+    console.error('[GitHub Sync Error]', err.message);
+  });
 }
 
 // ==========================================
@@ -304,6 +412,9 @@ app.get('/libro-de-oro', (req, res) => {
 });
 
 // Servir estáticos
+if (IS_SERVERLESS) {
+  app.use('/img', express.static(UPLOAD_DIR));
+}
 app.use(express.static(__dirname));
 
 // Manejo de errores de multer
